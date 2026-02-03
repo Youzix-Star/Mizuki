@@ -16,24 +16,34 @@ export type DeviceCategory = {
 };
 
 export const devicesData: DeviceCategory = {
-	OnePlus: [
+	Xiaomi: [
 		{
-			name: "OnePlus 13T",
-			image: "/images/device/oneplus13t.png",
-			specs: "Gray / 16G + 1TB",
+			name: "Redmi k30 5G",
+			image: "/images/device/redmi k30 5G.png",
+			specs: "Purple / 6G + 128GB",
 			description:
-				"Flagship performance, Hasselblad imaging, 80W SuperVOOC.",
-			link: "https://www.oneplus.com/cn/13t",
+				"120Hz smooth display, 64MP AI camera, 30W fast charging.",
+			link: "https://wap.zol.com.cn/1291/1290070/index.html",
 		},
 	],
-	Router: [
+	HONOR: [
 		{
-			name: "GL-MT3000",
-			image: "/images/device/mt3000.png",
-			specs: "1000Mbps / 2.5G",
+			name: "Honor 8A",
+			image: "/images/device/Honor 8A.png",
+			specs: "Black / 3G + 64GB",
 			description:
-				"Portable WiFi 6 router suitable for business trips and home use.",
-			link: "https://www.gl-inet.cn/products/gl-mt3000/",
+				"MediaTek chipset, 13MP AI camera, 5W standard charging.",
+			link: "https://wap.zol.com.cn/1250/1249446/index.html",
+		},
+	],
+	TP-LINK: [
+		{
+			name: "TL-WDR7660千兆版",
+			image: "/images/device/TL-WDR7660千兆版.png",
+			specs: "1900Mbps / 1G",
+			description:
+				"AC1900 wireless router suitable for home and business use.",
+			link: "https://www.tp-link.com.cn/m/product_1254.html?t=index",
 		},
 	],
 };
