@@ -36,7 +36,7 @@ export const devicesData: DeviceCategory = {
 			link: "https://wap.zol.com.cn/1250/1249446/index.html",
 		},
 	],
-	TP-LINK: [
+	"TP-LINK": [
 		{
 			name: "TL-WDR7660千兆版",
 			image: "/images/device/TL-WDR7660千兆版.png",
