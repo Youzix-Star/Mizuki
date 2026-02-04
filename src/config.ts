@@ -73,7 +73,7 @@ export const siteConfig: SiteConfig = {
 
 	bilibili: {
 		vmid: "1015832090", // 在此处设置你的Bilibili用户ID (vmid)，例如 "1129280784"
-		fetchOnDev: true, // 是否在开发环境下获取 Bilibili 数据（默认 false）
+		fetchOnDev: false, // 是否在开发环境下获取 Bilibili 数据（默认 false）
 		SESSDATA: "25e57543%2C1785681320%2Cce2bf%2A22CjBCyGbJnMeWXGqpbIMg7xZSxR9EPfcY7ki48aG0pan5DpXRoDrdj0iTRgkPj60d-JUSVkZZemZaUWtmZC1vOURHcWpTRXNEM2p4bHhobENYdlA3YnJKYnR4VXFKM3RvTDlMX3lGM1VpT1Q0dG4wYXRueVNRZThLNFVfSWdlMFdDZER1WDVEaWtRIIEC", // Bilibili SESSDATA（可选，用于获取观看进度，从浏览器cookie中获取）
 		coverMirror: "", // 封面图片镜像源（可选，如果需要使用镜像源，例如 "https://images.weserv.nl/?url="）
 		useWebp: true, // 是否使用WebP格式（默认 true）
