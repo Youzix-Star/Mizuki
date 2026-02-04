@@ -1,0 +1,20 @@
+---
+title: 别逗你东哥笑了
+published: 2026-02-04
+pinned: true
+description: A simple example of a Markdown blog post.
+tags: [Markdown, Blogging]
+category: Examples
+licenseName: "Unlicensed"
+author: Youzix
+sourceLink: "https://github.com/Youzix-Star/Mizuki"
+draft: false
+date: 2026-02-05
+pubDate: 2025-01-20
+permalink: "youzix-test"
+---
+
+# 这只是一篇测试文章
+
+> [!NOTE]
+> 不过抽象的是部署完网站后 我并不会Markdown语法 看来得学了…
