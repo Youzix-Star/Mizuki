@@ -7,7 +7,7 @@ description: 管理员基本行为准则
 tags: [Markdown, 管理规则]
 category: god dog
 author: YunXiao(玖) & Youzix(星)
-sourceLink: "key.yun52.cn"
+sourceLink: "https://key.yun52.cn/"
 draft: false
 ---
 
@@ -33,7 +33,7 @@ draft: false
 
 - **禁止** 管理发现 `违规行为` 而 `不处理`
 - **禁止** 管理发现 `群文件` 含 `违规文件` 而不 `处理`
-- **禁止** 管理随意 `@全体成员` 除非重要事件如 `群主被封号` `清人前确认` :spoiler[`地球爆炸`]
+- **禁止** 管理随意 `@全体成员` 除非重要事件如 `群主被封号` `清人前确认` :spoiler[地球爆炸]
 - `禁言` **不得** 脱离 [**处理群事件要求**](https://youzix.dpdns.org/posts/god-dog-work/) 运行
 
 ---
