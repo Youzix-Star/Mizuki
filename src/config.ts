@@ -80,7 +80,7 @@ export const siteConfig: SiteConfig = {
 	},
 
 	anime: {
-		mode: "local", // 番剧页面模式："bangumi" 使用Bangumi API，"local" 使用本地配置，"bilibili" 使用Bilibili API
+		mode: "bilibili", // 番剧页面模式："bangumi" 使用Bangumi API，"local" 使用本地配置，"bilibili" 使用Bilibili API
 	},
 
 	// 文章列表布局配置
@@ -122,7 +122,7 @@ export const siteConfig: SiteConfig = {
 				"/assets/desktop-banner/6.webp",
 			], // 桌面横幅图片
 			mobile: [
-				"/assets/mobile-banner/1.webp"，
+				"/assets/mobile-banner/1.webp",
 				"/assets/mobile-banner/2.webp",
 				"/assets/mobile-banner/3.webp",
 				"/assets/mobile-banner/4.webp",
@@ -148,7 +148,7 @@ export const siteConfig: SiteConfig = {
 		imageApi: {
 			enable: false, // 启用图片API
 			url: "http://domain.com/api_v2.php?format=text&count=4", // API地址，返回每行一个图片链接的文本
-		}，
+		},
 		// 这里需要使用PicFlow API的Text返回类型,所以我们需要format=text参数
 		// 项目地址:https://github.com/matsuzaka-yuki/PicFlow-API
 		// 请自行搭建API
@@ -432,7 +432,7 @@ export const expressiveCodeConfig: ExpressiveCodeConfig = {
 export const commentConfig: CommentConfig = {
 	enable: true, // 启用评论功能。当设置为 false 时，评论组件将不会显示在文章区域。
 	twikoo: {
-		envId: "https://youzix.netlify.app",
+		envId: "https://youzix.netlify.app/.netlify/functions/twikoo",
 		lang: SITE_LANG,
 	},
 };
@@ -555,7 +555,7 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 	components: {
 		left: ["profile", "announcement", "categories", "tags"],
 		right: ["site-stats", "calendar"],
-		drawer: ["profile", "announcement", "categories", "tags"],
+		drawer: ["profile", "announcement"],
 	},
 
 	// 默认动画配置
