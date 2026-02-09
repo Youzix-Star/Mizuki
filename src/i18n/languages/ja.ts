@@ -74,8 +74,14 @@ export const ja: Translation = {
 	[Key.animeEmpty]: "アニメのデータはありません",
 	[Key.animeEmptyBangumi]:
 		"Bangumiの構成またはネットワークを接続を確認してください",
+	[Key.animeEmptyBilibili]:
+		"Bilibiliの構成またはネットワーク接続を確認してください",
 	[Key.animeEmptyLocal]:
 		"src/data/anime.tsのファイルにアニメの情報を追加してください",
+	[Key.animeConfigBilibili]:
+		"src/config.tsファイルでBilibili vmidを設定してください",
+	[Key.animeConfigBangumi]:
+		"src/config.tsファイルでBangumi userIdを設定してください",
 
 	// 日記ページ
 	[Key.diarySubtitle]: "いつでも、どこでも生活を共有",
