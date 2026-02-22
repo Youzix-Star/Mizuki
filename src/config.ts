@@ -658,6 +658,3 @@ export const umamiConfig = {
 <script defer src="https://cloud.umami.is/script.js" data-website-id="a36b34c1-7e6c-4c6d-937c-e52b00f2afe2"></script>
   `.trim(), // 上面填你要插入的Script,不用再去Layout中插入
 } as const;
-=======
-// umamiConfig相关配置已移动至astro.config.mjs中,统计脚本请自行在Layout.astro文件的<head>中插入
->>>>>>> upstream/master
