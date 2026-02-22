@@ -650,7 +650,6 @@ export const widgetConfigs = {
 	share: shareConfig,
 } as const;
 
-<<<<<<< HEAD
 export const umamiConfig = {
 	enabled: true, // 是否显示Umami统计
 	apiKey: import.meta.env.UMAMI_API_KEY || "api_CwQqs4sCUBTAqmkWWajCs6Sr18QTbBRT", // API密钥优先从环境变量读取，否则使用配置文件中的值
