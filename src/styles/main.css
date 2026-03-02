@@ -43,7 +43,7 @@
 /* 导入 游趣体 字体 */
 @font-face {
   font-family: "游趣体";
-  src: url("/assets/font/ChildFunSans.ttf") format("ttf");
+  src: url("/assets/font/ChildFunSans.woff2") format("woff2");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
