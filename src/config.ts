@@ -75,7 +75,7 @@ export const siteConfig: SiteConfig = {
 		vmid: "1015832090", // 在此处设置你的Bilibili用户ID (vmid)，例如 "1129280784"r
 		fetchOnDev: false, // 是否在开发环境下获取 Bilibili 数据（默认 false）
 		coverMirror: "", // 封面图片镜像源（可选，如果需要使用镜像源，例如 "https://images.weserv.nl/?url="）
-		useWebp: true， // 是否使用WebP格式（默认 true）
+		useWebp: true, // 是否使用WebP格式（默认 true）
 
 		// bilibili 观看进度配置说明(可选，如需配置仔细阅读):
 		// 1. 本地开发：请在 .env 文件中填写 BILI_SESSDATA=your_SESSDATA
