@@ -59,7 +59,7 @@ export const siteConfig: SiteConfig = {
 		// 顶栏标题图标路径，默认使用 public/assets/home/home.webp
 		icon: "assets/home/home.webp",
 		// 网站Logo图片路径
-		logo: "assets/home/default-logo.webp",
+		logo: "assets/home/default-logo.webp"，
 	},
 
 	// 页面自动缩放配置
@@ -450,7 +450,7 @@ export const commentConfig: CommentConfig = {
 	enable: true, // 启用评论功能。当设置为 false 时，评论组件将不会显示在文章区域。
 	system: "twikoo", // 评论系统选择: "twikoo" | "giscus"
 	twikoo: {
-		envId: "http://youzix.dpdns.org/.netlify/functions/twikoo",
+		envId: "https://youzix.dpdns.org/.netlify/functions/twikoo",
 		lang: SITE_LANG,
 	},
 	giscus: {
