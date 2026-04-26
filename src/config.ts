@@ -393,7 +393,7 @@ export const profileConfig: ProfileConfig = {
 		},
 		{
 			name: "Email",
-			icon: "i-material-symbols:alternate-email-rounded",
+			icon: "material-symbols:alternate-email-rounded",
 			url: "mailto:wxd1y12r@gmail.com",
 		},
 		{
