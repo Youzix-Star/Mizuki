@@ -1,49 +1,21 @@
 
-This website is built with the **Astro** framework using the [Mizuki](https://github.com/LyraVoid/Mizuki) theme.
+Woc盒！ 怎么给我盒出来了
+只要别盒我 我爹我妈都在你手
 
-::github{repo="LyraVoid/Mizuki"}
+该网站采用 **Astro** 框架构建，并搭配 [Mizuki](https://github.com/matsuzaka-yuki/mizuki) 主题。
 
-## 🌟 Theme Features
+::github{repo="matsuzaka-yuki/Mizuki"}
 
-### 🎨 Design & User Experience
-- **Modern & Elegant Design** - Clean, minimalist interface with beautiful typography
-- **Fully Responsive** - Optimized for all devices from mobile to desktop
-- **Dark/Light Mode** - Automatic theme switching with smooth transitions
-- **Beautiful Typography** - Enhanced readability with JetBrains Mono font
-- **Smooth Animations** - Fluid page transitions and interactive elements
+## 🌟 主题特性
 
-### 🔍 Content & Search
-- **Advanced Search** - Powered by [Pagefind](https://pagefind.app/) for fast, accurate results
-- **Enhanced Markdown** - Extended syntax with code highlighting and math support
-- **Interactive Table of Contents** - Auto-scroll navigation for long articles
-- **RSS Feed Generation** - Stay updated with automatic feed generation
-- **Reading Time Estimation** - Know how long articles take to read
-- **Post Categorization** - Organize content with tags and categories
+### 🎨 现代优雅设计
+- **Br哥们 你真指望我来介绍它吗** -这是我的个人个博客 啊喂
+- **这只是一个名字** - 所以剩下的内容我就省略喽
 
-
-
-### 📱 Special Pages
-- **Anime Tracking Page** - Track your anime watching progress with ratings
-- **Friends Links Page** - Showcase friend websites with beautiful cards
-- **Diary/Moments Page** - Share life moments like social media posts
-- **Archive Page** - Organized timeline view of all posts
-- **About Page** - Customizable personal introduction (this page!)
-
-### 🛠 Technical Features
-- **Enhanced Code Blocks** - Powered by [Expressive Code](https://expressive-code.com/)
-- **Math Support** - LaTeX rendering with KaTeX for mathematical expressions
-- **Image Optimization** - PhotoSwipe gallery with lazy loading
-- **SEO Optimized** - Built-in sitemap and meta tags for better search visibility
-- **Performance Optimized** - Fast loading with caching and optimization
-- **Comment System Ready** - Integration support for Twikoo comments
-
-### 🎯 Advanced Markdown Features
-- **Callouts & Admonitions** - Beautiful info boxes with `> [!NOTE]`, `> [!TIP]`, `> [!WARNING]`
-- **Mathematical Equations** - Write LaTeX math with `$inline$` and `$$block$$` syntax
-- **GitHub Cards** - Embed repository cards with `::github{repo="user/repo"}`
-- **Syntax Highlighting** - Advanced code highlighting with line numbers
-- **Copy Code Buttons** - Easy code copying functionality
-
+## 😋 哎 这么简单吗？怎么这么快就到介绍我的环节了？
 ---
+- 我是一个B站**UP**
+- 目前经营 -1.[此博客](https://youzix.top/) 2.[数·占](https://math.youzix.top/)
 
 *Built with ❤️ using Astro and inspired by modern web design principles.*
+*I Love You*
