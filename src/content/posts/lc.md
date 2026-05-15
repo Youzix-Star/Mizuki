@@ -78,43 +78,37 @@ graph TD
 
 每个 API 请求经历以下阶段：
 
-```
-客户端请求
-    │
-    ▼
-① HTTP 方法检查 ──(非 POST)──→ 405 Method Not Allowed
-    │
-    ▼
-② CORS / 安全头设置
-    │
-    ▼
-③ API Key 验证（仅 external.php）
-    │  检查 X-API-Key 头
-    │  ├─ 查找 data/api_keys.json 中匹配的 enabled Key
-    │  ├─ 向下兼容 config.php 中的静态 Key
-    │  └─ 失败 → 401 Unauthorized
-    │
-    ▼
-④ 速率限制检查
-    │  基于 IP 的滑动窗口（60秒）
-    │  超限 → 429 Too Many Requests
-    │
-    ▼
-⑤ JSON Body 解析
-    │  失败 → 400 Bad Request
-    │
-    ▼
-⑥ Action 路由分发
-    │
-    ▼
-⑦ 业务逻辑处理
-    │  ├─ 输入校验（长度、格式、唯一性）
-    │  ├─ 数据库操作（flock 文件锁）
-    │  └─ Token 生成/验证
-    │
-    ▼
-⑧ JSON 响应返回
-    {"success": true/false, "message": "...", ...}
+```mermaid
+graph TD
+    %% 节点样式定义
+    classDef process fill:#e3f2fd,stroke:#1565c0,stroke-width:2px;
+    classDef decision fill:#fff9c4,stroke:#f9a825,stroke-width:2px;
+    classDef error fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c;
+    classDef success fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
+
+    Start([客户端请求]) --> MethodCheck{① HTTP 方法检查}
+    
+    MethodCheck -- 非 POST --> E405[405 Method Not Allowed]:::error
+    MethodCheck -- POST --> Cors[② CORS / 安全头设置]:::process
+    
+    Cors --> ApiCheck{③ API Key 验证<br/>仅 external.php}
+    ApiCheck -- 需要验证 --> KeyLookup[检查 X-API-Key<br/>查找 api_keys.json<br/>或 config.php 兼容]:::process
+    KeyLookup -- 有效 --> RateCheck{④ 速率限制<br/>IP 滑动窗口 60s}
+    KeyLookup -- 无效 --> E401[401 Unauthorized]:::error
+    
+    ApiCheck -- 无需验证 --> RateCheck
+    
+    RateCheck -- 超限 --> E429[429 Too Many Requests]:::error
+    RateCheck -- 未超限 --> JsonCheck{⑤ JSON Body 解析}
+    
+    JsonCheck -- 格式错误 --> E400[400 Bad Request]:::error
+    JsonCheck -- 成功 --> Route[⑥ Action 路由分发]:::process
+    
+    Route --> Biz[⑦ 业务逻辑处理<br/>· 输入校验<br/>· 数据库操作 flock 锁<br/>· Token 生成/验证]:::process
+    
+    Biz --> FinalResp[⑧ JSON 响应<br/>success: true/false]:::success
+
+    %% 连接线带箭头，自动生成
 ```
 
 ---
