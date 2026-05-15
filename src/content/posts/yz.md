@@ -1,7 +1,7 @@
 ---
-title: 统一认证中心 API
+title: 配置
 published: 2026-05-15
-description: 0v0
+description: API配置
 tags: [API, 幽云]
 category: API
 author: 洛轻羽
