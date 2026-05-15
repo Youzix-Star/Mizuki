@@ -36,33 +36,21 @@ draft: false
 
 ## 系统架构
 
-```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│  前端页面    │     │  外部站点    │     │  管理后台    │
-│ index.html  │     │  第三方APP  │     │ admin.html  │
-└──────┬──────┘     └──────┬──────┘     └──────┬──────┘
-       │                   │                   │
-       ▼                   ▼                   ▼
-  auth.php          external.php          admin.php
-       │                   │                   │
-       ├──── middleware.php ◄──────────────────┤
-       │     (CORS/限流/API Key 验证)          │
-       │                                       │
-       ├──── token.php ◄──────────────────────┤
-       │     (Token 生成/验证)                 │
-       │                                       │
-       ├──── config.php ◄─────────────────────┤
-       │     (配置加载 + settings.json 覆盖)   │
-       │                                       │
-       ├──── db.php ◄─────────────────────────┤
-       │     (JSON 文件读写 + flock 锁)        │
-       │                                       │
-       ▼                                       ▼
-  ┌──────────────────────────────────────────────┐
-  │              data/ 目录                       │
-  │  users.json  admin.json  settings.json       │
-  │  api_keys.json  rate_limit.json  admin.log   │
-  └──────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    FE[前端页面<br/>index.html] --> auth[auth.php]
+    EXT[外部站点<br/>第三方APP] --> ext[external.php]
+    ADMIN[管理后台<br/>admin.html] --> adm[admin.php]
+
+    auth --> mw[middleware.php<br/>CORS/限流/API Key 验证]
+    ext --> mw
+    adm --> mw
+
+    mw --> tok[token.php<br/>Token 生成/验证]
+    mw --> conf[config.php<br/>配置加载 + settings.json 覆盖]
+    mw --> db[db.php<br/>JSON 文件读写 + flock 锁]
+
+    db --> data[data/ 目录<br/>users.json  admin.json  settings.json<br/>api_keys.json  rate_limit.json  admin.log]
 ```
 
 ---
@@ -71,43 +59,21 @@ draft: false
 
 每个 API 请求经历以下阶段：
 
-```
-客户端请求
-    │
-    ▼
-① HTTP 方法检查 ──(非 POST)──→ 405 Method Not Allowed
-    │
-    ▼
-② CORS / 安全头设置
-    │
-    ▼
-③ API Key 验证（仅 external.php）
-    │  检查 X-API-Key 头
-    │  ├─ 查找 data/api_keys.json 中匹配的 enabled Key
-    │  ├─ 向下兼容 config.php 中的静态 Key
-    │  └─ 失败 → 401 Unauthorized
-    │
-    ▼
-④ 速率限制检查
-    │  基于 IP 的滑动窗口（60秒）
-    │  超限 → 429 Too Many Requests
-    │
-    ▼
-⑤ JSON Body 解析
-    │  失败 → 400 Bad Request
-    │
-    ▼
-⑥ Action 路由分发
-    │
-    ▼
-⑦ 业务逻辑处理
-    │  ├─ 输入校验（长度、格式、唯一性）
-    │  ├─ 数据库操作（flock 文件锁）
-    │  └─ Token 生成/验证
-    │
-    ▼
-⑧ JSON 响应返回
-    {"success": true/false, "message": "...", ...}
+```mermaid
+flowchart TD
+    A[客户端请求] --> B[HTTP 方法检查]
+    B -- 非 POST --> B1[405 Method Not Allowed]
+    B -- POST --> C[CORS / 安全头设置]
+    C --> D[API Key 验证]
+    D -- 仅 external.php --> D1{Key 有效?}
+    D1 -- 否 --> D2[401 Unauthorized]
+    D1 -- 是 --> E[速率限制检查]
+    E -- 超限 --> E1[429 Too Many Requests]
+    E -- 通过 --> F[JSON Body 解析]
+    F -- 格式错误 --> F1[400 Bad Request]
+    F -- 成功 --> G[Action 路由分发]
+    G --> H[业务逻辑处理<br/>输入校验、数据库操作、Token 签发等]
+    H --> I[JSON 响应返回<br/>{success: true/false, ...}]
 ```
 
 ---
@@ -175,137 +141,74 @@ Signature: HMAC-SHA256(header.payload, token_secret)
 
 ### 注册流程
 
-```
-用户输入用户名 + 密码
-        │
-        ▼
-   输入校验
-   ├─ 用户名：非空、长度 3-32、仅字母/数字/下划线/中文
-   ├─ 密码：非空、长度 8-128
-   │
-        ▼
-   检查用户名唯一性
-   ├─ db->userExists(username)
-   ├─ 读取 users.json → 查找 key（小写）
-   │
-        ▼ (不存在)
-   密码哈希
-   ├─ password_hash(password, BCRYPT, cost=12)
-   │
-        ▼
-   写入 users.json
-   ├─ flock(LOCK_EX) 排他锁
-   ├─ 读取 → 追加 → 写回 → 截断 → 解锁
-   │
-        ▼
-   生成 Token
-   ├─ token->generate(username)
-   ├─ Header + Payload + HMAC-SHA256 签名
-   │
-        ▼
-   返回 {"success":true, "token":"...", "username":"..."}
+```mermaid
+flowchart TD
+    A[用户输入用户名 + 密码] --> B[输入校验<br/>用户名: 非空、长度3-32、仅字母/数字/下划线/中文<br/>密码: 非空、长度8-128]
+    B --> C{用户名唯一性检查}
+    C -- 已存在 --> D[返回错误: 用户名已存在]
+    C -- 不存在 --> E[密码哈希<br/>password_hash, BCRYPT, cost=12]
+    E --> F[写入 users.json<br/>flock 排他锁，读取→追加→写回→解锁]
+    F --> G[生成 Token<br/>Header + Payload + HMAC-SHA256 签名]
+    G --> H[返回<br/>{success:true, token, username}]
 ```
 
 ### 登录流程
 
-```
-用户输入用户名 + 密码
-        │
-        ▼
-   输入非空校验
-        │
-        ▼
-   查找用户
-   ├─ db->findUser(username)
-   │
-        ▼ (存在)
-   密码验证
-   ├─ password_verify(password, stored_hash)
-   │
-        ▼ (匹配)
-   更新 last_login 时间戳
-   ├─ db->saveUser(username, updatedData)
-   │
-        ▼
-   生成 Token
-   │
-        ▼
-   返回 {"success":true, "token":"...", "username":"..."}
-
-   ── 失败统一返回 "用户名或密码错误"（防枚举）──
+```mermaid
+flowchart TD
+    A[用户输入用户名 + 密码] --> B[输入非空校验]
+    B --> C{查找用户}
+    C -- 不存在 --> D[返回: 用户名或密码错误]
+    C -- 存在 --> E{密码验证<br/>password_verify}
+    E -- 不匹配 --> D
+    E -- 匹配 --> F[更新 last_login 时间戳]
+    F --> G[生成 Token]
+    G --> H[返回<br/>{success:true, token, username}]
 ```
 
 ### Token 验证流程
 
-```
-前端读取 localStorage 中的 Token
-        │
-        ▼
-   POST /api/auth.php  {"action":"verify", "token":"..."}
-        │
-        ▼
-   token->verify(jwt)
-   ├─ 拆分三段
-   ├─ 验证签名（HMAC-SHA256）
-   ├─ 检查过期时间
-   │
-        ▼ (有效)
-   返回 {"success":true, "username":"...", "expires":"..."}
-
-        ▼ (无效/过期)
-   返回 {"success":false, "message":"Token 无效或已过期"}
-   前端清除 localStorage，跳转登录
+```mermaid
+flowchart TD
+    A[前端读取 localStorage 中的 Token] --> B[POST /api/auth.php<br/>action=verify, token]
+    B --> C{token->verify}
+    C -- 签名无效/已过期 --> D[返回<br/>{success:false, 消息:Token无效或已过期}]
+    C -- 有效 --> E[返回<br/>{success:true, username, expires}]
+    D --> F[前端清除 Token，跳转登录]
 ```
 
 ### 用户名检查流程
 
-```
-外部站点调用 check 接口
-        │
-        ▼
-   POST /api/external.php
-   Headers: X-API-Key: ak_xxx...
-   Body: {"action":"check", "username":"newuser"}
-        │
-        ▼
-   API Key 验证 → 速率限制 → 输入校验
-        │
-        ▼
-   db->userExists(username)
-   │
-        ▼
-   返回 {"success":true, "available": true/false}
+```mermaid
+flowchart TD
+    A[外部站点调用 check 接口] --> B[POST /api/external.php<br/>Header: X-API-Key<br/>Body: action=check, username]
+    B --> C[API Key 验证 → 速率限制 → 输入校验]
+    C --> D{db->userExists?}
+    D -- 是 --> E[返回 {success:true, available: false}]
+    D -- 否 --> F[返回 {success:true, available: true}]
 ```
 
 ### 管理员操作流程
 
-```
-管理员打开 admin.html
-        │
-        ▼
-   前端守卫层启动
-   ├─ 检查 localStorage 中的 admin_token
-   ├─ 无 Token → 显示登录页
-   ├─ 有 Token → 调用 check_token 验证
-   │    ├─ 有效 → 进入后台
-   │    └─ 无效 → 清除并显示登录页
-        │
-        ▼
-   登录
-   ├─ POST admin.php {"action":"login", "password":"..."}
-   ├─ 验证 bcrypt 哈希
-   ├─ 生成管理员 Token（密钥 = admin_ + 密码哈希）
-   ├─ 返回 Token
-        │
-        ▼
-   操作请求（每个请求自动携带 Token）
-   ├─ verifyAdmin() 检查 Token
-   │    ├─ 解析 Token → 验证签名 + 过期
-   │    └─ 检查 sub === 'admin'
-   ├─ 速率限制
-   ├─ 执行业务逻辑
-   ├─ 写入操作日志（admin.log）
-   └─ 返回结果
+
+```mermaid
+flowchart TD
+    A[管理员打开 admin.html] --> B{前端守卫<br/>检查 localStorage admin_token}
+    B -- 无 Token --> C[显示登录页]
+    B -- 有 Token --> D[调用 check_token 验证]
+    D -- 无效 --> C
+    D -- 有效 --> E[进入管理后台]
+    C --> F[输入密码登录<br/>POST admin.php action=login]
+    F --> G{验证 bcrypt 哈希}
+    G -- 失败 --> C
+    G -- 成功 --> H[生成管理员 Token<br/>密钥=admin_+密码哈希，2小时有效]
+    H --> E
+    E --> I[操作请求（携带 Token）]
+    I --> J[verifyAdmin 验证 Token<br/>检查签名+过期+sub===admin]
+    J --> K[速率限制]
+    K --> L[执行业务逻辑]
+    L --> M[写入操作日志 admin.log]
+    M --> N[返回结果]
 ```
 
 ---
@@ -400,75 +303,52 @@ Signature: HMAC-SHA256(header.payload, token_secret)
 
 ### 完整的第三方站点集成流程
 
-```
-第三方站点                    幽云 API                     数据层
-    │                           │                           │
-    │  ① POST /external.php     │                           │
-    │  X-API-Key: ak_xxx...     │                           │
-    │  {"action":"register"...} │                           │
-    │ ─────────────────────────>│                           │
-    │                           │  ② 验证 API Key           │
-    │                           │  ──api_keys.json────────>│
-    │                           │<─匹配结果────────────────│
-    │                           │                           │
-    │                           │  ③ 速率限制检查            │
-    │                           │  ──rate_limit.json──────>│
-    │                           │<─计数结果────────────────│
-    │                           │                           │
-    │                           │  ④ 输入校验               │
-    │                           │  ⑤ 检查用户名             │
-    │                           │  ──users.json───────────>│
-    │                           │<─查询结果────────────────│
-    │                           │                           │
-    │                           │  ⑥ 密码哈希 + 写入        │
-    │                           │  ──users.json(flock)────>│
-    │                           │<─写入确认────────────────│
-    │                           │                           │
-    │                           │  ⑦ 生成 Token             │
-    │                           │  HMAC-SHA256 签名          │
-    │                           │                           │
-    │  ⑧ JSON 响应              │                           │
-    │  {"success":true,         │                           │
-    │   "token":"...",          │                           │
-    │   "username":"..."}       │                           │
-    │<──────────────────────────│                           │
-    │                           │                           │
-    │  ⑨ 后续请求携带 Token      │                           │
-    │  POST /external.php       │                           │
-    │  X-API-Key: ak_xxx...     │                           │
-    │  {"action":"verify",      │                           │
-    │   "token":"..."}          │                           │
-    │ ─────────────────────────>│                           │
-    │                           │  ⑩ 验证签名 + 检查过期     │
-    │  {"success":true,         │                           │
-    │   "valid":true,           │                           │
-    │   "username":"..."}       │                           │
-    │<──────────────────────────│                           │
+```mermaid
+sequenceDiagram
+    participant 第三方站点
+    participant 幽云 API
+    participant 数据层
+
+    第三方站点->>幽云 API: POST /external.php, X-API-Key: ak_xxx..., {"action":"register"...}
+    幽云 API->>数据层: 验证 API Key (api_keys.json)
+    数据层-->>幽云 API: 匹配结果
+    幽云 API->>数据层: 速率限制检查 (rate_limit.json)
+    数据层-->>幽云 API: 计数结果
+    幽云 API->>幽云 API: 输入校验
+    幽云 API->>数据层: 检查用户名 (users.json)
+    数据层-->>幽云 API: 查询结果
+    幽云 API->>数据层: 密码哈希 + 写入 users.json (flock)
+    数据层-->>幽云 API: 写入确认
+    幽云 API->>幽云 API: 生成 Token (HMAC-SHA256)
+    幽云 API-->>第三方站点: {"success":true, "token":"...", "username":"..."}
+
+    第三方站点->>幽云 API: 后续请求携带 Token, X-API-Key, {"action":"verify", "token":"..."}
+    幽云 API->>幽云 API: 验证签名 + 检查过期
+    幽云 API-->>第三方站点: {"success":true, "valid":true, "username":"..."}
 ```
 
 ### 前端页面登录状态保持
 
-```
-浏览器                          auth.php
-  │                                │
-  │  页面加载                       │
-  │  读取 localStorage             │
-  │  ├─ 无 Token → 显示登录表单     │
-  │  └─ 有 Token ↓                 │
-  │                                │
-  │  POST {"action":"verify",      │
-  │        "token":"..."}          │
-  │ ──────────────────────────────>│
-  │                                │  验证签名 + 过期
-  │  {success:true, username}      │
-  │<──────────────────────────────│
-  │  显示已登录状态                 │
-  │                                │
-  │  ── 或 ──                      │
-  │                                │
-  │  {success:false}               │
-  │<──────────────────────────────│
-  │  清除 Token，显示登录表单       │
+
+```mermaid
+sequenceDiagram
+    participant 浏览器
+    participant auth.php
+
+    浏览器->>浏览器: 页面加载，读取 localStorage
+    alt 无 Token
+        浏览器->>浏览器: 显示登录表单
+    else 有 Token
+        浏览器->>auth.php: POST {"action":"verify", "token":"..."}
+        auth.php->>auth.php: 验证签名 + 过期
+        alt Token 有效
+            auth.php-->>浏览器: {success:true, username}
+            浏览器->>浏览器: 显示已登录状态
+        else Token 无效/过期
+            auth.php-->>浏览器: {success:false}
+            浏览器->>浏览器: 清除 Token，显示登录表单
+        end
+    end
 ```
 
 ---
