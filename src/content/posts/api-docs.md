@@ -1,16 +1,12 @@
 ---
 title: 幽云 API调用
 published: 2026-05-15
+date: 2026-05-15
 description: ovo
 tags: [API, 幽云]
 category: API
-licenseName: "Unlicensed"
 author: 洛轻羽
 draft: false
-date: 2026-05-15
-image: "./cover.png"
-pubDate: 2026-05-15
-permalink: "yun52-api"
 ---
 
 # 统一认证中心 API 接入文档
