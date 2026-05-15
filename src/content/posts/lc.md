@@ -176,35 +176,31 @@ Signature: HMAC-SHA256(header.payload, token_secret)
 
 ### 注册流程
 
-```
-用户输入用户名 + 密码
-        │
-        ▼
-   输入校验
-   ├─ 用户名：非空、长度 3-32、仅字母/数字/下划线/中文
-   ├─ 密码：非空、长度 8-128
-   │
-        ▼
-   检查用户名唯一性
-   ├─ db->userExists(username)
-   ├─ 读取 users.json → 查找 key（小写）
-   │
-        ▼ (不存在)
-   密码哈希
-   ├─ password_hash(password, BCRYPT, cost=12)
-   │
-        ▼
-   写入 users.json
-   ├─ flock(LOCK_EX) 排他锁
-   ├─ 读取 → 追加 → 写回 → 截断 → 解锁
-   │
-        ▼
-   生成 Token
-   ├─ token->generate(username)
-   ├─ Header + Payload + HMAC-SHA256 签名
-   │
-        ▼
-   返回 {"success":true, "token":"...", "username":"..."}
+```mermaid
+graph TD
+    classDef process fill:#e3f2fd,stroke:#1565c0,stroke-width:2px;
+    classDef decision fill:#fff9c4,stroke:#f9a825,stroke-width:2px;
+    classDef error fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c;
+    classDef success fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
+
+    Start([用户输入用户名 + 密码]) --> Validate[输入校验]:::process
+    
+    Validate --> CheckUser{用户名格式<br/>长度 3-32<br/>允许字母/数字/_/中文}
+    CheckUser -- 格式错误 --> ErrUser[返回错误<br/>用户名无效]:::error
+    CheckUser -- 通过 --> CheckPass{密码格式<br/>长度 8-128}
+    CheckPass -- 格式错误 --> ErrPass[返回错误<br/>密码无效]:::error
+    CheckPass -- 通过 --> UniqueCheck{检查用户名唯一性}
+    
+    UniqueCheck -- 已存在 --> ErrExists[返回错误<br/>用户名已占用]:::error
+    UniqueCheck -- 不存在 --> Hash[密码哈希<br/>bcrypt, cost=12]:::process
+    
+    Hash --> WriteLock[写入 users.json<br/>获取排他锁 flock LOCK_EX]:::process
+    WriteLock --> ReadAppend[读取文件 → 追加用户 → 写回]:::process
+    ReadAppend --> Unlock[截断 → 释放锁]:::process
+    
+    Unlock --> GenToken[生成 Token<br/>Header.Payload + HMAC-SHA256]:::process
+    
+    GenToken --> Resp[返回成功<br/>token, username]:::success
 ```
 
 ### 登录流程
