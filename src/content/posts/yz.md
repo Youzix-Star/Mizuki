@@ -1,6 +1,7 @@
 ---
 title: 配置
-published: 2026-05-15
+published: 2026-05-16
+date: 2026-05-15
 description: API配置
 tags: [API, 幽云]
 category: API
@@ -8,7 +9,7 @@ author: 洛轻羽
 draft: false
 ---
 
-# 统一认证中心 API
+# 幽云用户系统 API
 
 一套完整的登录/注册认证系统，支持前端页面使用、外部站点 API 调用、管理员后台管理。
 
@@ -19,12 +20,14 @@ auth-api/
 ├── index.html              # 前端登录/注册页面
 ├── admin.html              # 管理员后台（需登录）
 ├── API-DOCS.md             # 外部站点接入文档
+├── API-FLOW.md             # API 完整流程文档（架构/数据流/认证机制）
 ├── README.md               # 本文件
 ├── example-client.php      # 外部站点集成示例
 ├── api/
 │   ├── config.php          # 配置文件（支持 settings.json 覆盖）
-│   ├── auth.php            # 前端页面 API
+│   ├── auth.php            # 前端页面 API（注册/登录/修改密码/验证）
 │   ├── external.php        # 外部站点 API（需 API Key）
+│   ├── room.php            # 房间管理 API（创建/加入/踢人/消息）
 │   ├── admin.php           # 管理员后台 API
 │   ├── db.php              # JSON 数据层（文件锁 + 自动存储 username）
 │   ├── middleware.php       # 中间件（CORS、动态 API Key 验证、限流）
@@ -86,9 +89,26 @@ auth-api/
 
 | action | 参数 | 说明 |
 |--------|------|------|
-| `register` | `username`, `password` | 注册 |
-| `login` | `username`, `password` | 登录 |
+| `register` | `username`, `password`, `extra` (可选) | 注册 |
+| `login` | `username`, `password`, `extra` (可选) | 登录 |
 | `verify` | `token` | 验证 Token |
+| `change_password` | `token`, `old_password`, `new_password` | 修改密码 |
+
+### 房间 API（`/api/room.php`）
+
+需要 Token 认证（支持 API Key + Token）。
+
+| action | 参数 | 说明 |
+|--------|------|------|
+| `room_create` | `name`, `max_players`, `is_public`, `password`, `extra` | 创建房间 |
+| `room_join` | `room_id`, `password` | 加入房间 |
+| `room_leave` | `room_id` | 离开房间 |
+| `room_list` | `filter`, `page`, `per_page` | 房间列表 |
+| `room_info` | `room_id` | 房间详情 |
+| `room_update` | `room_id`, `name`, `max_players`, ... | 修改设置（房主） |
+| `room_kick` | `room_id`, `kick_username` | 踢出成员（房主） |
+| `room_delete` | `room_id` | 删除房间（房主） |
+| `room_message` | `room_id`, `content`, `type` | 发送房间消息 |
 
 ### 外部站点 API（`/api/external.php`）
 
@@ -96,10 +116,11 @@ auth-api/
 
 | action | 参数 | 说明 |
 |--------|------|------|
-| `register` | `username`, `password` | 注册 |
-| `login` | `username`, `password` | 登录 |
+| `register` | `username`, `password`, `extra` (可选) | 注册 |
+| `login` | `username`, `password`, `extra` (可选) | 登录 |
 | `verify` | `token` | 验证 Token |
 | `check` | `username` | 检查用户名是否可用 |
+| `change_password` | `token`, `old_password`, `new_password` | 修改密码 |
 
 ## 安全机制
 
@@ -116,7 +137,9 @@ auth-api/
 | 统一错误消息 | 登录失败统一流报（防枚举） |
 | CORS 白名单 | 仅允许指定域名跨域 |
 | 安全响应头 | X-Content-Type-Options, X-Frame-Options, no-cache |
-| 操作日志 | 管理员所有操作记录可追溯 |
+| 📋 操作日志 | 管理员所有操作记录可追溯 |
+| IP 追踪 | 记录注册 IP、最后登录 IP、登录次数 |
+| 附加信息 | 请求方可在注册/登录时传入 extra 数据（设备、来源等） |
 
 ## 外部站点集成
 
