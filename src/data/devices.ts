@@ -19,8 +19,7 @@ export const devicesData: DeviceCategory = {
 			name: "Redmi k30 5G",
 			image: "/images/device/redmik305g.webp",
 			specs: "Gray / 16G + 1TB",
-			description:
-				"Flagship performance, Hasselblad imaging, 80W SuperVOOC.",
+			description: "Flagship performance, Hasselblad imaging, 80W SuperVOOC.",
 			link: "https://www.oneplus.com/cn/13t",
 		},
 	],
